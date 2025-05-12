@@ -368,9 +368,11 @@ void GameSence::showStartScreen() {
 
 
 	settextstyle(40, 30, "微软");
+	setbkmode(TRANSPARENT);
 	outtextxy(20, 50, "请按回车键开始游戏");
 
 	settextstyle(40, 30, "微软");
+	setbkmode(TRANSPARENT);
 	outtextxy(20, 90, "按ESC退出游戏");
 }
 
