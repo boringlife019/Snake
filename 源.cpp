@@ -2,9 +2,7 @@
 #include<easyx.h>
 #include<ctime>
 #include<vector>
-#include<Windows.h>
-#include<mmsystem.h>
-#pragma comment(lib,"winmm.lib")
+
 
 /*精灵类*/
 class Sprite
@@ -45,6 +43,10 @@ public:
 	bool collisionWall();
 	bool collisionSelf();
 	void increment();
+	int getLength();
+
+
+
 };
 /*食物类*/
 class Food :public Sprite
@@ -74,8 +76,7 @@ private:
 	Food food;
 	Wall wall;
 public:
-	void initAudio();
-	void playEatSound();
+	GameSence() {};
 	void run();
 	void onMsg(const ExMessage& msg);
 	void snakeEatFood();
@@ -83,7 +84,10 @@ public:
 	void snakeHeadStrikeBody();
 	void showStartScreen();
 };
-void Sprite::draw() {
+
+/*Sprite method*/
+void Sprite::draw()
+{
 	setfillcolor(m_color);
 	fillrectangle(m_x, m_y, m_x + 10, m_y + 10);
 };
@@ -104,22 +108,25 @@ void Sprite::changeFoodPos()
 	int wallData[64][48] = { 0 };
 	tem_x = rand() % 64 * 10;
 	tem_y = rand() % 48 * 10;
+
 	for (int i = 0; i < 64; ++i) {
 		wallData[i][0] = 1;
 	}
+
 
 	for (int i = 0; i < 64; ++i) {
 		wallData[i][48 - 1] = 1;
 	}
 
+
 	for (int i = 0; i < 48; ++i) {
 		wallData[0][i] = 1;
 	}
 
+
 	for (int i = 0; i < 48; ++i) {
 		wallData[64 - 1][i] = 1;
 	}
-
 	while (wallData[tem_x / 10][tem_y / 10] == 1)
 	{
 		tem_x = rand() % 64 * 10;
@@ -133,14 +140,10 @@ void Sprite::changeFoodPos()
 /*Snake method*/
 void Snake::draw()
 {
-	for (int i = 1; i < nodes.size(); i++)
+	for (int i = 0; i < nodes.size(); i++)
 	{
 		nodes[i].draw();
 	}
-	IMAGE img_dz1;
-	loadimage(&img_dz1, "wtf/dz1.jpg", 30, 30);
-	const Sprite& head = nodes[0];
-	putimage(head.getX() - 10, head.getY() - 10, &img_dz1);
 }
 
 void Snake::bodyMove()
@@ -270,6 +273,10 @@ void Wall::setWall()
 
 
 }
+int Snake::getLength()
+{
+	return nodes.size();
+}
 
 
 /*GameSence method*/
@@ -301,6 +308,7 @@ void GameSence::onMsg(const ExMessage& msg)
 }
 void GameSence::run()
 {
+
 	BeginBatchDraw();
 	cleardevice();
 	wall.setWall();
@@ -311,6 +319,7 @@ void GameSence::run()
 	snakeEatFood();
 	snakeStrikeWall();
 	snakeHeadStrikeBody();
+
 
 
 	ExMessage msg = { 0 };
@@ -325,9 +334,10 @@ void GameSence::snakeEatFood()
 {
 	if (snake.collision(food))
 	{
+
 		snake.increment();
+
 		food.changeFoodPos();
-		playEatSound();
 	}
 }
 void GameSence::snakeStrikeWall()
@@ -349,51 +359,35 @@ void GameSence::snakeHeadStrikeBody()
 }
 
 
-void GameSence::showStartScreen() {
-	IMAGE img_dz;
-	loadimage(&img_dz, "wtf/dz.jpg", 640, 480);
-	cleardevice();
-	putimage(0, 0, &img_dz);
 
-	settextcolor(WHITE);
+void GameSence::showStartScreen() {
+	cleardevice();
+	setfillcolor(LIGHTCYAN);
+	fillrectangle(0, 0, 640, 480);
+	settextcolor(BROWN);
+
 
 	settextstyle(40, 30, "微软");
-	setbkmode(TRANSPARENT);
-	outtextxy(42, 350, _T("请按回车键开始游戏"));
+	outtextxy(20, 50, "请按回车键开始游戏");
 
-	settextstyle(20, 15, "微软");
-	setbkmode(TRANSPARENT);
-	outtextxy(0, 425, _T("按ESC退出游戏"));
+	settextstyle(40, 30, "微软");
+	outtextxy(20, 90, "按ESC退出游戏");
 }
-
-void GameSence::initAudio() {
-	mciSendString("open wtf/wu.WAV", NULL, 0, NULL);
-}
-
-void GameSence::playEatSound() {
-	mciSendString("stop wtf/wu.WAV", NULL, 0, NULL);
-	mciSendString("seek wtf/wu.WAV to start", NULL, 0, NULL);
-	mciSendString("play wtf/wu.WAV", NULL, 0, NULL);
-}
-
-
 
 /*Food methods*/
 void Food::draw()
 {
-	IMAGE img_rk;
-	loadimage(&img_rk, "wtf/rk.jpg", 10, 10);
-	putimage(m_x, m_y, &img_rk);
+	setfillcolor(m_color);
+	solidellipse(m_x, m_y, m_x + 10, m_y + 10);
 }
 
 
 
 int main()
 {
-	initgraph(640, 480);
-	srand((unsigned)time(NULL));
+	initgraph(640, 480, EX_SHOWCONSOLE);
+	srand(time(nullptr));
 	GameSence scene;
-	scene.initAudio();
 	scene.showStartScreen();
 	ExMessage msg1;
 	while (true) {
