@@ -5,6 +5,7 @@
 #include<Windows.h>
 #include<mmsystem.h>
 #pragma comment(lib,"winmm.lib")
+#include"ps.h"
 
 /*æ´¡È¿‡*/
 class Sprite
@@ -138,9 +139,9 @@ void Snake::draw()
 		nodes[i].draw();
 	}
 	IMAGE img_dz1;
-	loadimage(&img_dz1, "wtf/dz1.jpg", 30, 30);
+	loadimage(&img_dz1, "wtf/dz1.png", 30, 30);
 	const Sprite& head = nodes[0];
-	putimage(head.getX() - 10, head.getY() - 10, &img_dz1);
+	putimage_alpha(head.getX() - 10, head.getY() - 10, 30, 30, &img_dz1);
 }
 
 void Snake::bodyMove()
